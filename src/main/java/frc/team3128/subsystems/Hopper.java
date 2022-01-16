@@ -19,11 +19,13 @@ public class Hopper extends SubsystemBase {
     private DoubleSolenoid m_hpiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 4);
 
     private DigitalInput m_bottom, m_top;
-    // initialize photoelectric sensors here
+    private boolean isEjected;
 
     public Hopper() {
         configMotors();
+
         configSensors();
+        isEjected = true;
     }
 
     public static synchronized Hopper getInstance() {
@@ -38,7 +40,6 @@ public class Hopper extends SubsystemBase {
     private void configSensors() {
         m_bottom = new DigitalInput(Constants.HopperConstants.BOTTOM_SENSOR_ID);
         m_top = new DigitalInput(Constants.HopperConstants.TOP_SENSOR_ID);
-
     }
 
     public boolean getTop() {
@@ -49,12 +50,18 @@ public class Hopper extends SubsystemBase {
         return !m_bottom.get(); // .get() is inverted
     }
 
+    public boolean getEjected() {
+        return isEjected;
+    }
+
     public void ejectPiston(){
         m_hpiston.set(kForward);
+        isEjected = true;
     }
 
     public void retractPiston(){
         m_hpiston.set(kReverse);
+        isEjected = false;
     }
 
     public void turnPistonOff() {
